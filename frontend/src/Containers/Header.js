@@ -9,6 +9,7 @@ const Header = props => {
   const handleToggle = () => setShow(!show);
   const dispatch = useDispatch()
   const handleLogout = () => {
+    localStorage.clear();
     dispatch(logout())
 }
 const userLogin = useSelector((state) => state.userLogin)

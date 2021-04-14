@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Skeleton, Stack } from "@chakra-ui/react";
 import React, { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
 import Header from "./Header";
 
-const Dashboard = () => {
+const Dashboard = ({ history }) => {
     const [ users, setUsers ] = useState([]);
     const [isFetching, setIsFetching] = useState(false);
+    const [error, setError] = useState(false);
 	const [page, setPage] = useState(1);
     const handleScroll = () => {
 		if (
@@ -14,7 +16,6 @@ const Dashboard = () => {
 		)
 			return;
 		setIsFetching(true);
-		console.log(isFetching);
 	};
     const getUsers = async () => {
 		setTimeout(async () => {
@@ -31,9 +32,15 @@ const Dashboard = () => {
 		setIsFetching(false);
 	};
     useEffect(() => {
+      const userData = localStorage.getItem('userInfo');
+      console.log(userData);
+      if(userData && userData.token) {
         getUsers();
         window.addEventListener('scroll', handleScroll);
-      }, []);
+      } else {
+        setError(true);
+      }
+       }, []);
       useEffect(() => {
 		if (!isFetching) return;
 		fetchMoreListItems();
@@ -42,7 +49,7 @@ const Dashboard = () => {
 	console.log(users);
     return (
         <div className="app">
-            <Header />
+            {!error && <Header />}
             <div align="center" justify="center" height="100vh" direction="column">
           {users.map((user) => {
             return (
@@ -55,7 +62,7 @@ const Dashboard = () => {
               </div>
             );
           })}
-          {!isFetching && <Stack>
+          {(!isFetching || error) && <Stack>
   <Skeleton height="20px" />
   <Skeleton height="20px" />
   <Skeleton height="20px" />
